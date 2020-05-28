@@ -47,7 +47,7 @@ def best_first_graph_search_modified(problem, f, display=False):
             if display:
                 print(len(explored), "paths have been expanded and", len(frontier), "paths remain in the frontier")
             print("nodes popped: {}".format(nodes_popped))
-            print("length of solution: {}".format(node.f))
+            print("length of solution: {}".format(len(node.solution())))
             return node
         explored.add(node.state)
         for child in node.expand(problem):
@@ -71,7 +71,61 @@ def manhattan(node):
 def max_of_both(node):
     return max(misplaced_tile(node), manhattan(node))
 
-for i in range(1,10):       
+#based on EightPuzzle class of search.py of aima-python code base
+class DuckPuzzle(Problem):
+    def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
+        super().__init__(initial, goal)
+
+    def find_blank_square(self, state):
+        return state.index(0)
+
+    def actions(self, state):
+        possible_actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+        index_blank_square = self.find_blank_square(state)
+
+        if index_blank_square == 0 or index_blank_square == 2 or index_blank_square == 6:
+            possible_actions.remove('LEFT')
+        if index_blank_square < 2 or index_blank_square == 4 or index_blank_square == 5:
+            possible_actions.remove('UP')
+        if index_blank_square == 1 or index_blank_square == 5 or index_blank_square == 8:
+            possible_actions.remove('RIGHT')
+        if index_blank_square > 5 or index_blank_square == 2:
+            possible_actions.remove('DOWN')
+
+        return possible_actions
+
+    def result(self, state, action):
+        """ Given state and action, return a new state that is the result of the action.
+        Action is assumed to be a valid action in the state """
+
+        # blank is the index of the blank square
+        blank = self.find_blank_square(state)
+        new_state = list(state)
+
+        delta = {'UP': -3, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
+        neighbor = blank + delta[action]
+        new_state[blank], new_state[neighbor] = new_state[neighbor], new_state[blank]
+
+        return tuple(new_state)
+
+    def goal_test(self, state):
+        """ Given a state, return True if state is a goal state or False, otherwise """
+
+        return state == self.goal
+
+    def check_solvability(self, state):
+        """ Checks if the given state is solvable """
+
+        inversion = 0
+        for i in range(len(state)):
+            for j in range(i + 1, len(state)):
+                if (state[i] > state[j]) and state[i] != 0 and state[j] != 0:
+                    inversion += 1
+
+        return inversion % 2 == 0
+
+
+for i in range(1,11):       
     print("Run {}".format(i))
     s = make_rand_8puzzle()
     display(s.state)
