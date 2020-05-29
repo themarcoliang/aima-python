@@ -1,4 +1,6 @@
 # a1.py
+# Written by Marco Liang
+# May 20, 2020
 
 from search import *
 from random import shuffle
