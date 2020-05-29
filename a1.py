@@ -4,6 +4,7 @@ from search import *
 from random import shuffle
 import time
 
+#helper functions
 def make_rand_8puzzle():
     initial = [i for i in range(9)]
     while True:
@@ -24,7 +25,48 @@ def display_8puzzle(state):
         if((i+1)%3==0):
             print('\n', end='')
 
+def make_rand_duck():
+    puzzle = DuckPuzzle((1, 2, 3, 4, 5, 6, 7, 8, 0)) # create duck puzzle as goal state
+    iterations = random.randrange(100,500) #iterations to run for
+    puzzle.state = puzzle.initial
+    for _ in range(0, iterations):
+        act = random.choice(puzzle.actions(puzzle.state))
+        puzzle.state = puzzle.result(puzzle.state, act)
+    puzzle.initial = puzzle.state
+    return puzzle
+
+def display_duck(state):
+    for i in range(len(state)):
+        if(i==6):
+            print('  ', end='')
+        if(state[i]==0):
+            print('*', end=' ')
+        else:
+            print(state[i], end=' ')
+        if(i==1 or i==5 or i == 8):
+            print('\n', end='')
+
+#these two helper functions are used for getting the row and col of duck puzzle pieces
+def get_row(index):
+    if index in [0,1]:
+        return 0
+    if index in [2,3,4,5]:
+        return 1
+    if index in [6,7,8]:
+        return 2
+
+def get_col(index):
+    if index in [0,2]:
+        return 0
+    if index in [1,3,6]:
+        return 1
+    if index in [4,7]:
+        return 2
+    if index in [5,8]:
+        return 3
+
 #referencing code from search.py of aima-python code base
+#A* search algorithm
 def astar_search_modified(problem, h=None):
     start_time = time.time()
     h = memoize(h or problem.h, 'h')
@@ -57,6 +99,7 @@ def best_first_graph_search_modified(problem, f):
                     frontier.append(child)
     return None
 
+#heuristics
 def misplaced_tile(node):
     goal = (1, 2, 3, 4, 5, 6, 7, 8, 0)
     return sum(s != g for (s, g) in zip(node.state, goal))
@@ -68,6 +111,14 @@ def manhattan(node):
 
 def max_of_both(node):
     return max(misplaced_tile(node), manhattan(node))
+
+def manhattan_duck(node):
+    goalRow = (2,0,0,1,1,1,1,2,2)
+    goalCol = (3,0,1,0,1,2,3,1,2)
+    return sum(abs(get_row(i) - goalRow[s]) + abs(get_col(i)- goalCol[s]) for i,s in enumerate(node.state))
+
+def max_of_both_duck(node):
+    return max(misplaced_tile(node), manhattan_duck(node))
 
 #based on EightPuzzle class of search.py of aima-python code base
 class DuckPuzzle(Problem):
@@ -113,53 +164,6 @@ class DuckPuzzle(Problem):
         """ Given a state, return True if state is a goal state or False, otherwise """
         return state == self.goal
 
-def make_rand_duck():
-    puzzle = DuckPuzzle((1, 2, 3, 4, 5, 6, 7, 8, 0)) # create duck puzzle as goal state
-    iterations = random.randrange(100,500) #iterations to run for
-    puzzle.state = puzzle.initial
-    for _ in range(0, iterations):
-        act = random.choice(puzzle.actions(puzzle.state))
-        puzzle.state = puzzle.result(puzzle.state, act)
-    puzzle.initial = puzzle.state
-    return puzzle
-
-def display_duck(state):
-    for i in range(len(state)):
-        if(i==6):
-            print('  ', end='')
-        if(state[i]==0):
-            print('*', end=' ')
-        else:
-            print(state[i], end=' ')
-        if(i==1 or i==5 or i == 8):
-            print('\n', end='')
-
-def manhattan_duck(node):
-    goalRow = (2,0,0,1,1,1,1,2,2)
-    goalCol = (3,0,1,0,1,2,3,1,2)
-    return sum(abs(get_row(i) - goalRow[s]) + abs(get_col(i)- goalCol[s]) for i,s in enumerate(node.state))
-
-def max_of_both_duck(node):
-    return max(misplaced_tile(node), manhattan_duck(node))
-
-def get_row(index):
-    if index in [0,1]:
-        return 0
-    if index in [2,3,4,5]:
-        return 1
-    if index in [6,7,8]:
-        return 2
-
-def get_col(index):
-    if index in [0,2]:
-        return 0
-    if index in [1,3,6]:
-        return 1
-    if index in [4,7]:
-        return 2
-    if index in [5,8]:
-        return 3
-
 def Question2(iterations):
     print("The 8 Puzzle")
     for i in range(1,iterations+1):    
@@ -178,7 +182,7 @@ def Question3(iterations):
     for i in range(1,iterations+1):    
         print("Run {}".format(i))
         s = make_rand_duck()
-        display_8puzzle(s.state)
+        display_duck(s.state)
         print("Using misplaced tile heuristic")
         astar_search_modified(s, misplaced_tile)
         print("Using Manhattan distance heuristic")
