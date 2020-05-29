@@ -18,7 +18,7 @@ def make_rand_8puzzle():
             break
     return puzzle
 
-def display_8puzzle(state):
+def display(state):
     for i in range(len(state)):
         if(state[i]==0):
             print('*', end=' ')
@@ -171,7 +171,7 @@ def Question2(iterations):
     for i in range(1,iterations+1):    
         print("Run {}".format(i))
         s = make_rand_8puzzle()
-        display_8puzzle(s.state)
+        display(s.state)
         print("Using misplaced tile heuristic")
         astar_search_modified(s, misplaced_tile)
         print("Using Manhattan distance heuristic")
