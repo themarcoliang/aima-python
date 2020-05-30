@@ -10,14 +10,15 @@ import time
 def make_rand_8puzzle():
     initial = [i for i in range(9)]
     while True:
-        shuffle(initial)
-        puzzle = EightPuzzle(initial)
-        if(puzzle.check_solvability(puzzle.initial)):
+        shuffle(initial) #shuffle the initial array
+        puzzle = EightPuzzle(initial) #construct the puzzle
+        if(puzzle.check_solvability(puzzle.initial)): #check for solvability, if solvable, loop ends
             puzzle.initial = tuple(initial)
             puzzle.state = puzzle.initial
             break
     return puzzle
 
+#displays 8 puzzle, takes in state array
 def display(state):
     for i in range(len(state)):
         if(state[i]==0):
@@ -32,20 +33,20 @@ def make_rand_duck():
     iterations = random.randrange(100,500) #iterations to run for
     puzzle.state = puzzle.initial
     for _ in range(0, iterations):
-        act = random.choice(puzzle.actions(puzzle.state))
-        puzzle.state = puzzle.result(puzzle.state, act)
+        act = random.choice(puzzle.actions(puzzle.state)) #choose random action from available ones
+        puzzle.state = puzzle.result(puzzle.state, act) #uses result to generate the next state
     puzzle.initial = puzzle.state
     return puzzle
 
 def display_duck(state):
     for i in range(len(state)):
-        if(i==6):
+        if(i==6): #there's a gap before index 6 tile
             print('  ', end='')
         if(state[i]==0):
             print('*', end=' ')
         else:
             print(state[i], end=' ')
-        if(i==1 or i==5 or i == 8):
+        if(i==1 or i==5 or i==8):
             print('\n', end='')
 
 #these two helper functions are used for getting the row and col of duck puzzle pieces
@@ -77,6 +78,7 @@ def astar_search_modified(problem, h=None):
     print("elapsed time: {}s".format(elapsed_time))
     return result
 
+#mostly same as search.py, but prints node_popped counter and solution length
 def best_first_graph_search_modified(problem, f):
     f = memoize(f, 'f')
     node = Node(problem.initial)
@@ -145,12 +147,8 @@ class DuckPuzzle(Problem):
 
         return possible_actions
 
-    def result(self, state, action):
-        """ Given state and action, return a new state that is the result of the action.
-        Action is assumed to be a valid action in the state """
-
-        # blank is the index of the blank square
-        blank = self.find_blank_square(state)
+    def result(self, state, action): #generates the next state based on action
+        blank = self.find_blank_square(state)  #blank is the index of the blank square
         new_state = list(state)
 
         if(blank > 1 and blank < 4):
@@ -162,8 +160,7 @@ class DuckPuzzle(Problem):
 
         return tuple(new_state)
 
-    def goal_test(self, state):
-        """ Given a state, return True if state is a goal state or False, otherwise """
+    def goal_test(self, state): #returns true if state == goal
         return state == self.goal
 
 def Question2(iterations):
@@ -192,5 +189,5 @@ def Question3(iterations):
         print("Using max of misplaced tile and Manhattan distance heuristics")
         astar_search_modified(s, max_of_both_duck)
 
-Question2(10)
+Question2(10) #run for 10 iterations
 Question3(10)
