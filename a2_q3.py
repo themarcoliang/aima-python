@@ -24,6 +24,7 @@ def run_q3():
     graphs = [rand_graph(0.1,31), rand_graph(0.2,31), rand_graph(0.3,31),
     rand_graph(0.4, 31), rand_graph(0.5,31), rand_graph(0.6,31)]
     count = 0
+    print("Solving the Erdos-Renyi Random Graphs with Backtracking and AC3 and Forward Checking Inference")
     for g in graphs:
         numPeople = 31
         elapsedTime = 0
@@ -48,7 +49,6 @@ def run_q3():
         
         print("=================================================")
         print("Run", count)
-        print("Solved with Backtracking and AC3 and Forward Checking Inference")
         print("Probability:", count * 0.1)
         print("Number of People:", numPeople)
         print("Number of Edges:", edge_count(g))
@@ -57,4 +57,4 @@ def run_q3():
         print("Total Number of Assignments:", assigns)
         print("Total Number of Unassignments", unassigns)         
 
-run_q3()
+# run_q3()
