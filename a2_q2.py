@@ -1,3 +1,7 @@
+#Assignment 2, Q2
+#CMPT 310, Summer 2020
+#Created by Marco Liang 301308414
+
 # from a2_q1 import rand_graph
 
 def check_teams(graph, csp_sol):

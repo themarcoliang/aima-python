@@ -1,3 +1,7 @@
+#Assignment 2, Q1
+#CMPT 310, Summer 2020
+#Created by Marco Liang 301308414
+
 import random
 
 def rand_graph(p,n):
