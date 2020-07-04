@@ -111,7 +111,7 @@ def play_a_new_game():
                         scores[i] += 1
                     elif winner == 1: #if the computer lost
                         scores[i] -= 1
-            nextMove = scores.index(max(scores)) #find the move with largest number of wins/ties
+            nextMove = scores.index(max(scores)) #find the move with largest number of wins - losses
             print("Computer makes a move ({})!".format(possibleMoves[nextMove]))
             # print("Possible moves: ", possibleMoves)
             # print("Scores: ", scores)
