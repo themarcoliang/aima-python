@@ -1,10 +1,11 @@
 # a3.py
 # Written by Marco Liang
 # Jul 3, 2020
-# A tic tac toe game played against a computer who uses stats from random playouts
+# A tic tac toe game played against a computer that uses stats from random playouts to pick its moves
 
 from copy import deepcopy
 from random import choice
+
 # Function that displays a board (array of 9 numbers)
 # empty : 0
 # player : 1
@@ -26,9 +27,10 @@ def display(board):
             print(" ", end=" | ")
     print("\n-------------")
 
-#check whether the game is over, returns True or False, and the winner (0 if tied)
+# Function that checks whether the game is over, returns True or False and the winner (0 if tied)
 def game_over(board):
-    noMove = 0
+    noMove = 0 #this counts the number of lines that has no moves (ex. having both X and O in a diagonal line)
+    
     #check columns
     for i in range(3):
         column = [board[i],board[i+3],board[i+6]]
@@ -36,7 +38,7 @@ def game_over(board):
             return True, 1
         elif column == [2,2,2]: #computer wins
             return True, 2
-        elif 1 in column and 2 in column: #this col no longer winnable since both players in it
+        elif 1 in column and 2 in column: #this column no longer winnable by either player since both are in it
             noMove += 1
     
     #check rows
@@ -48,6 +50,7 @@ def game_over(board):
             return True, 2
         elif 1 in row and 2 in row: 
             noMove += 1
+
     #check diagonals
     for i in [2,4]:
         diagonal = [board[4-i],board[4],board[4+i]]
@@ -63,7 +66,7 @@ def game_over(board):
     else:
         return False, None
 
-#finishes the game based on random moves and returns the winner
+# This simulates the game based on random moves until it's over and returns the winner
 def random_playout(board, whoseTurn):
     res = game_over(board) #check if game is over
     if res[0]: #game is over
@@ -76,6 +79,7 @@ def random_playout(board, whoseTurn):
         whoseTurn = 2
     else:
         whoseTurn = 1
+    #recursively try the next step
     return random_playout(board, whoseTurn)
 
 def play_a_new_game():
