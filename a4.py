@@ -20,7 +20,7 @@ def check_format(split_rule):
             return False
     return True
 
-def load(heads, parameters):
+def load(rules, parameters):
     if len(parameters) == 0:
         print("Error: missing file name")
         return
@@ -37,7 +37,7 @@ def load(heads, parameters):
         split_line = line.split()
         if check_format(split_line) == False:
             print("Error: {} is not a valid knowledge base".format(parameters[0]))
-            heads = {}
+            rules = {}
             return
         else:
             head = split_line[0]
@@ -49,11 +49,17 @@ def load(heads, parameters):
                     continue
                 else:
                     items_to_append.append(item)
-            heads[head] = items_to_append
+            rules[head] = items_to_append
 
-def tell(parameters):
-    print("tell")
-    print(parameters)
+def tell(true_atoms, parameters):
+    for atom in parameters:
+        if not is_atom(atom):
+            print("Error: \"{}\" is not a valid atom".format(atom))
+        if atom in true_atoms:
+            print("Atom \"{}\" already known to be true".format(atom))
+        else:
+            true_atoms.append(atom)
+            print("\"{}\" added to KB".format(atom))
 
 def infer_all():
     print("infer_all")
@@ -70,15 +76,14 @@ def driver():
         if(function == "load"):
             loaded = True
             #reset heads and true_atoms since it's a new KB whenever load is called
-            heads = {}
-            true_atoms = {}
-            load(heads, split_command)
-            print(heads)
+            rules = {}
+            true_atoms = []
+            load(rules, split_command)
         elif(function == "tell"):
             if loaded == False:
                 print("Error: No KB Loaded")
                 continue
-            tell(split_command)
+            tell(true_atoms, split_command)
         elif(function == "infer_all"):
             if loaded == False:
                 print("Error: No KB Loaded")
