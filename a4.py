@@ -58,11 +58,24 @@ def tell(true_atoms, parameters):
         if atom in true_atoms:
             print("Atom \"{}\" already known to be true".format(atom))
         else:
-            true_atoms.append(atom)
+            true_atoms.add(atom)
             print("\"{}\" added to KB".format(atom))
 
-def infer_all():
-    print("infer_all")
+def infer_all(rules, true_atoms):
+    inferred_atoms = set()
+    for head, atoms in rules.items():
+        combined_atoms = true_atoms|inferred_atoms
+        if all(a in combined_atoms for a in atoms) and head not in combined_atoms:
+            print("{} is inferred to be true!".format(head))
+            inferred_atoms.add(head)
+    print("Newly inferred atoms:")
+    if(inferred_atoms == set()):
+        print("None")
+    else:
+        print(inferred_atoms)
+    print("Atoms already known to be true:")
+    print(true_atoms)
+    return inferred_atoms|true_atoms
 
 def driver():
     loaded = False
@@ -77,7 +90,7 @@ def driver():
             loaded = True
             #reset heads and true_atoms since it's a new KB whenever load is called
             rules = {}
-            true_atoms = []
+            true_atoms = set()
             load(rules, split_command)
         elif(function == "tell"):
             if loaded == False:
@@ -88,7 +101,7 @@ def driver():
             if loaded == False:
                 print("Error: No KB Loaded")
                 continue
-            infer_all()
+            true_atoms = infer_all(rules, true_atoms)
         else:
             print("Error: unknown command \"{}\"".format(function))
             continue
