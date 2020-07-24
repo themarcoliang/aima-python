@@ -66,7 +66,6 @@ def infer_all(rules, true_atoms):
     for head, atoms in rules.items():
         combined_atoms = true_atoms|inferred_atoms
         if all(a in combined_atoms for a in atoms) and head not in combined_atoms:
-            print("{} is inferred to be true!".format(head))
             inferred_atoms.add(head)
     print("Newly inferred atoms:")
     if(inferred_atoms == set()):
