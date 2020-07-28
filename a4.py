@@ -36,6 +36,7 @@ def load(rules, parameters):
     for line in lines:
         split_line = line.split()
         if check_format(split_line) == False:
+            print(line)
             print("Error: {} is not a valid knowledge base".format(parameters[0]))
             rules = {}
             return
@@ -50,34 +51,53 @@ def load(rules, parameters):
                 else:
                     items_to_append.append(item)
             rules[head] = items_to_append
+    for line in lines:
+        print(line, end="")
+    print("\n{} new rule(s) added".format(len(lines)))
+    f.close()
 
-def tell(true_atoms, parameters):
+def tell(rules, true_atoms, parameters):
     for atom in parameters:
         if not is_atom(atom):
             print("Error: \"{}\" is not a valid atom".format(atom))
         if atom in true_atoms:
             print("Atom \"{}\" already known to be true".format(atom))
+        elif atom in rules.keys():
+            print("Cannot tell {} to be true because it's a head atom".format(atom))
         else:
             true_atoms.add(atom)
             print("\"{}\" added to KB".format(atom))
 
 def infer_all(rules, true_atoms):
     inferred_atoms = set()
-    for head, atoms in rules.items():
-        combined_atoms = true_atoms|inferred_atoms
-        if all(a in combined_atoms for a in atoms) and head not in combined_atoms:
-            inferred_atoms.add(head)
+    while True:
+        length = len(inferred_atoms)
+        for head, atoms in rules.items():
+            combined_atoms = true_atoms|inferred_atoms
+            if all(a in combined_atoms for a in atoms) and head not in combined_atoms:
+                inferred_atoms.add(head)
+        if len(inferred_atoms) == length:
+            break
     print("Newly inferred atoms:")
     if(inferred_atoms == set()):
         print("None")
     else:
         print(inferred_atoms)
     print("Atoms already known to be true:")
-    print(true_atoms)
+    if(true_atoms == set()):
+        print("None")
+    else:
+        print(true_atoms)
     return inferred_atoms|true_atoms
 
 def driver():
     loaded = False
+    print("\nAvailable Commands:")
+    print("load <kb file> : loads the specified knowledge base file")
+    print("tell <atom1> <atom2>... : tells the kb that the atoms are true")
+    print("note that it's possible to tell an atom that does not exist in the kb!")
+    print("infer_all: kb infers all possible atoms from given information")
+    print("exit: exits program\n")
     while(True):
         command = input("kb> ")
         if command == "":
@@ -95,12 +115,15 @@ def driver():
             if loaded == False:
                 print("Error: No KB Loaded")
                 continue
-            tell(true_atoms, split_command)
+            tell(rules, true_atoms, split_command)
         elif(function == "infer_all"):
             if loaded == False:
                 print("Error: No KB Loaded")
                 continue
             true_atoms = infer_all(rules, true_atoms)
+        elif(function == "exit"):
+            print("Program Terminating")
+            return
         else:
             print("Error: unknown command \"{}\"".format(function))
             continue
